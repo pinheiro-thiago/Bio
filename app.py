@@ -6,7 +6,7 @@ import openpyxl
 
 BASE_DIR = Path(__file__).resolve().parent
 EXCEL_FILE = BASE_DIR / "Operação.xlsx"
-LOGO_FILE = BASE_DIR / "assets" / "logo.png"
+LOGO_FILE = BASE_DIR / "logo.png"
 
 st.set_page_config(
     page_title="Unidade de Biocombustíveis de Itaipu",
