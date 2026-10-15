@@ -6,7 +6,11 @@ import openpyxl
 
 BASE_DIR = Path(__file__).resolve().parent
 EXCEL_FILE = BASE_DIR / "Operação.xlsx"
-LOGO_FILE = BASE_DIR / "logo.png"
+LOGO_FILE = BASE_DIR / "assets" / "logo.png"
+HERO_FILE = BASE_DIR / "assets" / "FotoUD.jpg"
+REALIZADORES_FILE = BASE_DIR / "assets" / "realizadores.png"
+HISTORY_FILE = BASE_DIR / "historia.json"
+HISTORY_PHOTOS = BASE_DIR / "assets" / "historico"
 
 st.set_page_config(
     page_title="Unidade de Biocombustíveis de Itaipu",
@@ -21,6 +25,20 @@ st.markdown("""
 section[data-testid="stSidebar"] {border-right:1px solid #E1E9E4;}
 .hero {padding:1.8rem 2rem;border-radius:16px;color:#fff;
 background:linear-gradient(120deg,#174B37 0%,#1F6B4A 62%,#4A8A69 100%);margin-bottom:1.2rem;}
+.site-hero {min-height:440px;display:flex;align-items:center;padding:clamp(1.25rem,4vw,3.5rem);border-radius:18px;color:white;background-size:cover;background-position:center;margin:0 0 1.5rem 0;box-sizing:border-box;}
+.site-hero-content {display:flex;align-items:center;gap:clamp(1.25rem,3vw,2.5rem);max-width:1120px;}
+.site-hero-logo {background:rgba(255,255,255,.97);padding:1.1rem;border-radius:14px;flex:0 0 300px;box-shadow:0 8px 30px rgba(0,0,0,.16);box-sizing:border-box;}
+.site-hero-logo img {display:block;width:100%;height:auto;object-fit:contain;}
+.site-hero-copy {max-width:720px;text-shadow:0 1px 8px rgba(0,0,0,.18);}
+.site-hero h1 {font-size:clamp(2rem,4vw,3.7rem);line-height:1.08;max-width:850px;margin:.5rem 0 1rem 0;}
+.site-hero p {font-size:1.1rem;max-width:720px;}
+.site-kicker {font-size:.8rem;letter-spacing:.15em;font-weight:800;text-transform:uppercase;}
+@media (max-width:760px){.site-hero{min-height:unset;padding:1.25rem}.site-hero-content{flex-direction:column;align-items:flex-start;gap:1.25rem}.site-hero-logo{flex:0 1 auto;width:min(100%,300px);padding:.75rem}.site-hero h1{font-size:2.15rem}.site-hero p{font-size:1rem}}
+.site-footer {margin-top:3rem;padding:1.5rem 0 .5rem;border-top:1px solid #dce5df;text-align:center;}
+.footer-logos {display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap;margin:1.25rem auto .5rem auto;}
+.footer-logos img {max-width:230px;max-height:76px;width:auto;height:auto;object-fit:contain;}
+@media (max-width:640px){.footer-logos{gap:1.5rem}.footer-logos img{max-width:175px;max-height:60px}}
+.history-card {padding:1.1rem 1.25rem;border-left:4px solid #26734d;background:#f5f8f6;border-radius:0 12px 12px 0;margin-bottom:1rem;}
 .hero h1 {font-size:clamp(1.8rem,3vw,2.65rem);line-height:1.12;margin:0 0 .65rem 0;}
 .hero p {font-size:1.03rem;max-width:900px;margin:0;opacity:.96;}
 .eyebrow {font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:#D4E9DD;}
@@ -116,45 +134,96 @@ def read_excel_data():
     finally:
         wb.close()
 
-def show_home():
-    brand()
+def show_footer():
     st.markdown("""
-    <div class="hero">
-      <div class="eyebrow">PORTAL INSTITUCIONAL E OPERACIONAL</div>
-      <h1>Conhecimento, operação e inovação em biocombustíveis</h1>
-      <p>Um ponto de acesso aos conteúdos da unidade e aos indicadores operacionais de alimentação dos biodigestores, volume de biogás e qualidade do gás.</p>
+    <div class="site-footer">
+      <div style="color:#587064;font-size:.85rem">Unidade de Biocombustíveis de Itaipu · Biogás, biometano e inovação</div>
+      <div style="color:#587064;font-size:.75rem;margin-top:1rem;text-transform:uppercase;letter-spacing:.08em">Realização</div>
+      <div class="footer-logos">
+        <img src="https://cibiogas.org/wp-content/uploads/2022/06/LOGO.svg" alt="CIBiogás" loading="lazy">
+        <img src="https://www.itaipu.gov.br/wp-content/uploads/2024/03/Logo_Itaipu_Preferencial.svg-1024x724-1.png" alt="Itaipu Binacional" loading="lazy">
+      </div>
     </div>
     """, unsafe_allow_html=True)
-    st.subheader("Explore o portal")
+
+def show_home():
+    # Testeira institucional: fotografia real da unidade, logo oficial e título integrados.
+    import base64
+    if HERO_FILE.exists():
+        encoded_photo = base64.b64encode(HERO_FILE.read_bytes()).decode("ascii")
+        background = f"linear-gradient(90deg, rgba(9,42,29,.86) 0%, rgba(12,57,39,.68) 58%, rgba(12,57,39,.24) 100%), url(data:image/jpeg;base64,{encoded_photo})"
+    else:
+        background = "linear-gradient(120deg,#174B37,#4A8A69)"
+    if LOGO_FILE.exists():
+        encoded_logo = base64.b64encode(LOGO_FILE.read_bytes()).decode("ascii")
+        logo_html = f'<div class="site-hero-logo"><img src="data:image/png;base64,{encoded_logo}" alt="Logo da Unidade de Demonstração de Biocombustíveis de Itaipu"></div>'
+    else:
+        logo_html = '<div class="site-hero-logo"><strong>UNIDADE DE BIOCOMBUSTÍVEIS · ITAIPU</strong></div>'
+    st.markdown(f'''<section class="site-hero" style="background-image:{background}">
+      <div class="site-hero-content">{logo_html}
+        <div class="site-hero-copy">
+          <div class="site-kicker">ITAIPU · ENERGIA · INOVAÇÃO</div>
+          <h1>Unidade de Biocombustíveis</h1>
+          <p>Transformando resíduos em energia e conhecimento. Um espaço de demonstração, pesquisa aplicada e desenvolvimento de soluções em biogás e biometano.</p>
+        </div>
+      </div>
+    </section>''', unsafe_allow_html=True)
+    st.markdown("## Conheça a unidade")
+    st.write("Explore a história da unidade, conheça os conteúdos audiovisuais e acompanhe os registros operacionais disponíveis.")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("#### Vídeo institucional")
-        st.write("Conheça a unidade e sua contribuição para o aproveitamento de resíduos e a transição energética.")
-        if st.button("Assistir ao vídeo", key="home_inst", use_container_width=True):
-            st.session_state["nav_page"] = "Vídeos"
-            st.session_state["video_choice"] = "Institucional"
+        st.markdown("#### Nossa história")
+        st.write("Conheça os marcos, as melhorias e os momentos que construíram a trajetória da unidade.")
+        if st.button("Explorar histórico", key="home_history", use_container_width=True):
+            st.session_state["nav_page"] = "Histórico"
             st.rerun()
     with c2:
-        st.markdown("#### Segurança")
-        st.write("Acesse o conteúdo audiovisual de segurança para apoiar a rotina da unidade.")
-        if st.button("Abrir conteúdo", key="home_safe", use_container_width=True):
+        st.markdown("#### Vídeos")
+        st.write("Apresentações institucionais, segurança e registros das obras.")
+        if st.button("Acessar vídeos", key="home_videos", use_container_width=True):
             st.session_state["nav_page"] = "Vídeos"
-            st.session_state["video_choice"] = "Segurança"
             st.rerun()
     with c3:
-        st.markdown("#### Diário de obra")
-        st.write("Consulte o registro audiovisual das obras e melhorias realizadas.")
-        if st.button("Ver diário de obra", key="home_work", use_container_width=True):
-            st.session_state["nav_page"] = "Vídeos"
-            st.session_state["video_choice"] = "Diário de obra"
+        st.markdown("#### Dashboard operacional")
+        st.write("Consulte indicadores de alimentação, produção estimada e composição do biogás registrados na planilha.")
+        if st.button("Acessar dashboard", type="primary", key="home_dashboard", use_container_width=True):
+            st.session_state["nav_page"] = "Dashboard operacional"
             st.rerun()
-    st.divider()
-    st.subheader("Dashboard operacional")
-    st.write("Visualize os registros da planilha Excel utilizada atualmente. O aplicativo apenas lê o arquivo e não grava alterações nele.")
-    if st.button("Acessar dashboard", type="primary", key="home_dashboard"):
-        st.session_state["nav_page"] = "Dashboard operacional"
-        st.rerun()
-    st.caption("Os vídeos são incorporados do YouTube; a exibição depende das permissões dos links e da rede utilizada.")
+    show_footer()
+
+def show_history():
+    brand(compact=True)
+    st.title("Histórico da unidade")
+    st.write("Uma linha do tempo da trajetória, das melhorias e dos momentos importantes da Unidade de Biocombustíveis de Itaipu.")
+    st.info("Este histórico começa com um texto-base editável. Para registrar datas e acontecimentos com precisão, edite o arquivo historia.json e adicione fotos à pasta assets/historico.")
+    import json
+    try:
+        entries = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+    except Exception as exc:
+        st.error(f"Não foi possível ler historia.json: {exc}")
+        return
+    for entry in entries:
+        st.markdown('<div class="history-card">', unsafe_allow_html=True)
+        st.markdown(f"### {entry.get('ano','Marco da trajetória')} — {entry.get('titulo','')}")
+        st.write(entry.get("texto", ""))
+        photo_names = entry.get("fotos", [])
+        existing = [HISTORY_PHOTOS / name for name in photo_names if (HISTORY_PHOTOS / name).exists()]
+        if existing:
+            cols = st.columns(min(3, len(existing)))
+            for i, photo in enumerate(existing):
+                with cols[i % len(cols)]:
+                    st.image(str(photo), use_container_width=True, caption=photo.stem.replace("_", " "))
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("### Galeria de fotos")
+    gallery = sorted([p for p in HISTORY_PHOTOS.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}])
+    if gallery:
+        cols = st.columns(3)
+        for i, photo in enumerate(gallery):
+            with cols[i % 3]:
+                st.image(str(photo), use_container_width=True, caption=photo.stem.replace("_", " "))
+    else:
+        st.caption("As fotos históricas aparecerão aqui quando forem adicionadas à pasta assets/historico.")
+    show_footer()
 
 def show_videos():
     brand(compact=True)
@@ -238,13 +307,11 @@ def show_dashboard():
 
     tab1, tab2, tab3 = st.tabs(["Alimentação CSTR", "Composição do biogás", "Dados tabulares"])
     with tab1:
-        st.subheader("Registros de alimentação")
+        st.subheader("Gráficos de alimentação")
         if f.empty:
             st.info("Sem registros no período selecionado.")
         else:
             st.bar_chart(f.set_index("Data")[["Massa do restaurante registrada (kg)", "Outros substratos (kg)"]])
-            st.dataframe(f.sort_values("Data", ascending=False), use_container_width=True, hide_index=True)
-            st.download_button("Baixar alimentação CSV", f.to_csv(index=False).encode("utf-8-sig"), "alimentacao_cstr.csv", "text/csv")
     with tab2:
         st.subheader("Composição do biogás e totalizador")
         if g.empty:
@@ -272,13 +339,15 @@ def show_dashboard():
 def main():
     with st.sidebar:
         st.markdown("## Portal da Unidade")
-        st.radio("Navegação", ["Página inicial", "Vídeos", "Dashboard operacional"], key="nav_page", label_visibility="collapsed")
+        st.radio("Navegação", ["Página inicial", "Histórico", "Vídeos", "Dashboard operacional"], key="nav_page", label_visibility="collapsed")
         st.divider()
         st.caption("Unidade de Biocombustíveis de Itaipu")
         st.caption("Portal institucional e operacional")
     page = st.session_state.get("nav_page", "Página inicial")
     if page == "Página inicial":
         show_home()
+    elif page == "Histórico":
+        show_history()
     elif page == "Vídeos":
         show_videos()
     else:

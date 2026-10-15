@@ -33,3 +33,11 @@ Executar localmente disponibiliza o portal apenas no computador anfitrião por p
 
 SEGURANÇA
 O portal não altera a planilha original. O arquivo Excel está empacotado junto com o código; avalie se ele pode ser distribuído dessa forma antes de compartilhar o ZIP.
+
+ATUALIZAÇÕES DO PORTAL
+- Página inicial institucional com FotoUD.jpg como fundo e logo da unidade.
+- Nova página Histórico com linha do tempo e galeria de fotos.
+- Para editar os textos históricos, edite historia.json.
+- Para adicionar fotos, coloque JPG/PNG/WEBP em assets/historico. Para associar fotos a um marco, escreva os nomes dos arquivos na lista "fotos" correspondente em historia.json.
+- O rodapé apresenta os logos do CIBiogás e da Itaipu Binacional usando os endereços oficiais fornecidos. Como são carregados de sites externos, a exibição depende da disponibilidade desses endereços e de acesso à internet.
+- Ao publicar no Streamlit Community Cloud, envie todos esses arquivos ao mesmo repositório GitHub e faça commit/push das alterações.
